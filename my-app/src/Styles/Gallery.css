@@ -1,0 +1,10 @@
+.smallBase{
+    height: 200px;
+    width: 200px;
+    margin: 10px;
+    border: 2px solid black;
+}
+
+.smallBase:hover{
+    border: 5px solid black;
+}

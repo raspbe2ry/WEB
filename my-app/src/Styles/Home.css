@@ -1,0 +1,14 @@
+#centralPart {
+    display: inline-grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-rows: 400px;
+    grid-column-gap: 10%;
+    grid-row-gap: 50px;
+    margin-top: 150px;
+    margin-left: 10%;
+    margin-right: 10%;
+}
+
+.tt{
+    background-color: aliceblue;
+}

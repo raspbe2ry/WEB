@@ -1,0 +1,59 @@
+
+#header{
+    display: grid;
+    background-color:#8A2727 !important; 
+}
+
+
+#content{
+    display: grid;
+    background-color: #AA3939 !important;
+    grid-template-rows: auto;
+    grid-template-columns: 1fr;
+}
+
+.navStart {
+    background-color: #3D1255;
+    color: white;
+    opacity: 0.6;
+    font-size: 24px;
+    font-family: NightinTokyo;
+}
+
+.navElement {
+    opacity: 1;
+    background-color: #8A2727;
+    color: white;
+    font-size: 36px;
+    font-family: NightinTokyo;
+    padding-left: 10px;
+    padding-right: 10px;
+    -webkit-transition: background-color 1s;
+    -moz-transition: background-color 1s;
+    -o-transition: background-color 1s;
+    transition: background-color 1s;
+    -webkit-transition: margin 1s;
+    -moz-transition: margin 1s;
+    -o-transition: margin 1s;
+    transition:  1s;
+}
+
+.navElement:hover
+{
+    opacity: 1;
+    background-color: #6A1919;
+    color: white;
+    font-size: 36px;
+    font-family: NightinTokyo;
+    padding-left: 10px;
+    padding-right: 10px;  
+}
+
+a {
+    text-decoration: none !important;
+}
+
+@font-face {
+    font-family: 'NightinTokyo';
+    src: url('../fonts/NightinTokyo.ttf') format('truetype');
+}

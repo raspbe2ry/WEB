@@ -1,0 +1,76 @@
+{
+  "posts": [
+    {
+      "id": 1,
+      "title": "json-server",
+      "author": "typicode"
+    }
+  ],
+  "comments": [
+    {
+      "id": 1,
+      "body": "some comment",
+      "postId": 1
+    }
+  ],
+  "profile": {
+    "name": "typicode"
+  },
+  "trainers":
+  [
+    {"id":1, 
+     "fullName":"Vujadin Samardžić", 
+     "photo":"http://www.sportzkick.com/wp-content/uploads/2017/04/kane.png",
+     "description": "Profesionalno se bavim karateom 12 godina. Nosioc sam crog pojasa treći dan. Učesnik sam mnogih domaćih i međunarodnih turnira i osvajač domaćeg šampionata u katama."
+    },
+    {"id":2, 
+      "fullName":"Nikola Nikolić", 
+      "photo":"https://premierleague-static-files.s3.amazonaws.com/premierleague/photos/players/250x250/p42786.png",
+      "description": "Profesionalno se bavim karateom 12 godina. Nosioc sam crog pojasa treći dan. Učesnik sam mnogih domaćih i međunarodnih turnira i osvajač domaćeg šampionata u individualnim borbama."    
+    },
+    {"id":3, 
+     "fullName":"Stefan Lalić", 
+     "photo":"https://premierleague-static-files.s3.amazonaws.com/premierleague/photos/players/250x250/p62398.png",
+     "description": "U karateu sam 15 godina. Nosioc sam crog pojasa drugi dan. Učesnik sam mnogih domaćih i međunarodnih turnira i osvajač domaćeg šampionata u katama."
+    }
+  ], 
+  "trainings":
+  [
+    {
+      "title" : "Kalča, 18:30-19:30",
+      "start" : "2019-01-28",
+      "end" : "2019-01-28",
+      "trainerId"  : 1
+    },  
+    {
+      "title" : "Kalča, 18:30-19:30",
+      "start" : "2019-01-30",
+      "end" : "2019-01-30",
+      "trainerId"  : 2
+    },  
+    {
+      "title" : "Kalča, 19:00-20:00",
+      "start" : "2019-02-02",
+      "end" : "2019-02-02",
+      "trainerId"  : 3
+    },    
+    {
+      "title" : "Kalča, 18:30-19:30",
+      "start" : "2019-02-04",
+      "end" : "2019-02-04",
+      "trainerId"  : 1
+    },  
+    {
+      "title" : "Kalča, 18:30-19:30",
+      "start" : "2019-02-06",
+      "end" : "2019-02-06",
+      "trainerId"  : 3
+    },  
+    {
+      "title" : "Kalča, 19:00-20:00",
+      "start" : "2019-02-09",
+      "end" : "2019-02-09",
+      "trainerId"  : 2
+    }  
+  ] 
+}

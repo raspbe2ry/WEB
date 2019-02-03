@@ -1,0 +1,11 @@
+body{
+    background-color: #AA3939 !important;
+}
+
+#app{
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+    margin-top: 0px !important;
+    background-color: #AA3939;
+}
