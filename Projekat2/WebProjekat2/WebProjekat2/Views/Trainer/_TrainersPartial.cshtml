@@ -1,0 +1,137 @@
+﻿@model IEnumerable<WebProjekat2.BModels.TrainerBasic>
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="~/css/TrainerStyles.css" rel="stylesheet" />
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.FullName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Photo)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+        <tr  data-photo="@item.Photo" data-fullName="@item.FullName" class="trainerRow">
+            <td>
+                @Html.DisplayFor(modelItem => item.FullName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Title)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Photo)
+            </td>
+            <td>
+                <button class="btnDelTrainer btn btn-danger" data-id="@item.Id">Delete</button>
+                <button class="btnEdtTrainer btn btn-primary" data-id="@item.Id">Edit</button>
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>
+
+<script>
+    function ShowTrainerEditBox(result, trainerId) {
+        var dialog = bootbox.dialog({
+            title: 'Edit trainer',
+            message: result,
+            size: 'large',
+            buttons: {
+                create: {
+                    label: "Edit",
+                    className: 'btn-success',
+                    callback: function () {
+                        var fullName = $('.edt.FullName').val();
+                        var description = $('.edt.Description').val();
+                        var photo = $('.edt.Photo').val();
+                        var title = $('.edt.Title').children("option:selected").val();
+
+                        var trainer = {
+                            id: trainerId,
+                            fullName: fullName,
+                            description: description,
+                            photo: photo,
+                            title: title
+                        }
+
+                        $.ajax({
+                            url: "/Trainer/Edit/",
+                            type: "POST",
+                            data: { trainer: trainer },
+                            success: function (result) {
+                                RefreshTrainersTable(result);
+                            }
+                        });
+                    }
+                }
+            }
+        });
+    }
+
+    $('.btnEdtTrainer').click(function (event) {
+        event.stopPropagation();
+        var id = $(this).data("id");
+
+        $.ajax({
+            url: "/Trainer/GetFor/",
+            type: "GET",
+            data: { trainerId: id, htmlClass: "edt", actionName: "Edit", controllerName: "Trainer" },
+            success: function (result) {
+                ShowTrainerEditBox(result, id);
+            }
+        });
+    });
+
+    $('.btnDelTrainer').click(function (event) {
+        event.stopPropagation();
+        var id = $(this).data("id");
+
+        $.ajax({
+            url: "/Trainer/Delete/",
+            type: "POST",
+            data: { trainerId: id},
+            success: function (result) {
+                RefreshTrainersTable(result);
+            }
+        });
+    });
+
+    $('.trainerRow').click(function () {
+        var photoURL = $(this).data("photo");
+        var fullName = $(this).data("fullname");
+
+        var dialog = bootbox.dialog({
+            title: fullName,
+            message: '<img src="' + photoURL + '">',
+            size: 'large',
+            buttons: {
+                close: {
+                    label: "Close",
+                    className: 'btn-primary',
+                    callback: function () {
+
+                    }
+                }
+            }
+        });
+    })
+</script>

@@ -1,0 +1,33 @@
+﻿@model IEnumerable<WebProjekat2.BModels.BeltEarningBasic>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.EarnDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Belt)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Success)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.EarnDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Belt)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Success)
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,42 @@
+﻿@model WebProjekat2.ViewModels.BeltEarningViewModel;
+@using WebProjekat2.Models;
+
+<div class="form-group">
+    <label for="Earn Date">Earn Date</label>
+    <div class="form-group col-sm-6">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="@Model.HtmlClass EarnDate"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <label for="Title">Title</label>
+    @Html.DropDownListFor(Model => Model.BeltEarningBasic.Belt, Enum.GetValues(typeof(KarateTitle)).Cast<KarateTitle>().Select(x => new SelectListItem { Text = x.ToString(), Value = ((int)x).ToString() }), new { @class=Model.HtmlClass+ " Belt" })
+</div>
+<div class="form-group">
+    <label for="Success">Success</label>
+    <input class="span2  @Model.HtmlClass Success" value="@Model.BeltEarningBasic.Success" type="checkbox">
+</div>
+<input type="hidden" value="@Model.BeltEarningBasic.StudentId" class="@Model.HtmlClass StudentId"/>
+<div class="form-group">
+    <label for="trainerPart">Trainer</label>
+    @Html.DropDownListFor(Model => Model.Trainer, Model.Trainers, "Select trainer", new { @class="trainerC" })
+</div>
+<button class="@Model.HtmlClass  @Model.ActionName btn-primary" style="margin: 20px">@Model.ActionName</button>
+
+<script>
+    var htmlClass='@Model.HtmlClass';
+    var earnDate = new Date("@Model.BeltEarningBasic.EarnDate");
+
+    debugger;
+    $('.' + htmlClass + '.EarnDate').datetimepicker({
+        inline: true,
+        sideBySide: true,
+        defaultDate: earnDate,
+    });
+
+    $('.' + htmlClass + '.EarnDate').datetimepicker('setDate', earnDate);
+
+</script>

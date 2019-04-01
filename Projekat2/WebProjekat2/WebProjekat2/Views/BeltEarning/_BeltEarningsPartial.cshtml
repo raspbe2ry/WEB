@@ -1,0 +1,61 @@
+﻿@model IEnumerable<WebProjekat2.BModels.BeltEarningBasic>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.StudentName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EarnDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Belt)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Success)
+            </th>
+            <th>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.StudentName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EarnDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Belt)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Success)
+            </td>
+            <td>
+                <button class="delBeltEarning btn btn-danger" aria-hidden="true" data-id="@item.Id"><i class="fas fa-igloo"></i>Delete</button>
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>
+
+<script>
+    $(".delBeltEarning").click(function (event) {
+        debugger;
+        event.stopPropagation();
+        var id = $(this).data("id");
+
+        $.ajax({
+            url: "/BeltEarning/Delete/",
+            type: "POST",
+            data: { beltEarningId: id },
+            success: function (result) {
+                RefreshBeltEaningsTable(result);
+            }
+        });
+    });
+</script>

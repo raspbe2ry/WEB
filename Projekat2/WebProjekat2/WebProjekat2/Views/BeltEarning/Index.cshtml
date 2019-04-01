@@ -1,0 +1,26 @@
+﻿@model IEnumerable<WebProjekat2.BModels.BeltEarningBasic>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2 style="margin-top: 80px">Belt Earnings</h2>
+
+<div id="beltEarningsTable">
+    @Html.Partial("_BeltEarningsPartial", @Model)
+</div>
+
+<script>
+    function RefreshBeltEaningsTable() {
+        $.blockUI();
+        $.ajax({
+            url: "/BeltEarning/GetAllBeltEarnings/",
+            type: "GET",
+            success: function (result) {
+                $('#beltEarningsTable').html(result);
+                $.unblockUI();
+            }
+        });
+    }
+</script>

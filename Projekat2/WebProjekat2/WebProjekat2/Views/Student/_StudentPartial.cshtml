@@ -1,0 +1,31 @@
+﻿@model WebProjekat2.ViewModels.StudentViewModel
+@using WebProjekat2.Models
+
+    <form asp-controller="@Model.ControllerName" asp-action="@Model.ActionName" method="post">
+        <input type="hidden" asp-for="StudentBasic.Id" value="@Model.StudentBasic.Id"/>
+        <div class="form-group">
+            <label for="FullName">Full Name</label>
+            <input type="text" asp-for="StudentBasic.FullName" class="form-control @Model.HtmlClass FullName" id="fullName" placeholder="Enter Full Name">
+        </div>
+        <div class="form-group">
+            <label for="TrainingStart">Training start</label>
+            <div class="input-append date" id="trainingStart" data-date="@Model.StudentBasic.TrainingStart" data-date-format="dd-mm-yyyy">
+                <input class="span2 @Model.HtmlClass TrainingStart" asp-for="StudentBasic.TrainingStart" type="text" value="@Model.StudentBasic.TrainingStart">
+                <span class="add-on glyphicon glyphicon-calendar"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="TitleId">Title</label><br />
+                <select asp-for="StudentBasic.TitleId" asp-items="Html.GetEnumSelectList<KarateTitle>()" class="@Model.HtmlClass Title">
+                    <option selected="selected" value="">Choose title</option>
+                </select>
+        </div>
+        <button type="submit" class="btn btn-success btn-sm" style="margin-bottom:10px; margin-right:10px; float:right">@Model.ActionName Student</button>
+        <br /><br />
+    </form>
+    
+    <script>
+        
+        var htmlClass ="." + "@Model.HtmlClass" +".TrainingStart";
+        $(htmlClass).datepicker();
+    </script>

@@ -1,0 +1,91 @@
+﻿
+<div style="background-color:#4eb257 ; border-radius: 15px 50px; margin-left:40px ; margin-right:40px">
+    <div style="padding-left:10px; padding-top: 10px; padding-bottom: 10px; background-color: #cdd6ce; border-radius: 8px 25px;">
+        <h4>
+            Monthly Report Filter
+        </h4>
+    </div>
+    <div style="margin-top: 20px; margin-bottom: 20px">
+        <div class="row" style="margin-left: 40px">
+            <label class="col-sm-4">New Students<input type="checkbox" class="newStudentsC" name="New Students" /></label>
+            <label class="col-sm-4">New Belt Earnings<input type="checkbox" class="newBeltEarningsC" name="New BeltEarnings" /></label>
+            <label class="col-sm-4">By Title<input type="checkbox" class="byTitleC" name="By Title" disabled></label>
+        </div>
+        <div class="row" style="margin-left: 40px">
+            <label class="col-sm-4">Number of Trainings<input type="checkbox" class="numOfTrainingsC" name="Number of Trainings" /></label>
+            <label class="col-sm-4">Training with Max Students<input type="checkbox" class="maxStudentsC" name="Training with Max Students" /></label>
+            <label class="col-sm-4">Training with Min Students<input type="checkbox" class="minStudentsC" name="Training with Min Students" /></label>
+        </div>
+        <div class="row" style="margin-left: 40px">
+            <label class="col-sm-4">
+                Month
+                <input type="text" class="reportMonth" placeholder="Select month">
+            </label>
+        </div>
+        <div class="row">
+            <button style="float: right; margin-right: 40px; margin-top:10px; margin-bottom:10px" class="btn btn-primary applyFilter">Apply fillter</button>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    var startDate = new Date();
+    var fechaFin = new Date();
+    var FromEndDate = new Date();
+    var ToEndDate = new Date();
+
+    $('.reportMonth').datepicker({
+        autoclose: true,
+        minViewMode: 1,
+        format: 'mm/yyyy'
+    }).on('changeDate', function (selected) {
+        startDate = new Date(selected.date.valueOf());
+        startDate.setDate(startDate.getDate(new Date(selected.date.valueOf())));
+        $('.to').datepicker('setStartDate', startDate);
+    });
+
+    $('.newBeltEarningsC').change(function () {
+        if (this.checked) {
+            $('.byTitleC').attr('disabled', false);
+        }
+        else {
+            $('.byTitleC').attr('disabled', true);            
+        }
+    });
+
+    $('.applyFilter').click(function () {
+        $('#reportContainer').block({
+            message: 'Loading report',
+            overlayCSS: { backgroundColor: '#fff' }
+        });
+
+        var newStudents = $('.newStudentsC')[0].checked;
+        var newBeltEarnings = $('.newBeltEarningsC')[0].checked;
+        var byTitle = $('.byTitleC')[0].checked;
+        var numOfTrainings = $('.numOfTrainingsC')[0].checked;
+        var maxStudents = $('.maxStudentsC')[0].checked;
+        var minStudents = $('.minStudentsC')[0].checked;
+        var month = $('.reportMonth').val();
+
+        var reportConfiguration = {
+            newStudents, 
+            newBeltEarnings, 
+            byTitle, 
+            numOfTrainings, 
+            maxStudents,
+            minStudents, 
+            month
+        }
+
+        $.ajax({
+            url: "/Analytic/GetReport/",
+            type: "POST",
+            data: reportConfiguration,
+            success: function (result) {
+                $('#reportContainer').html(result);
+                $('#reportContainer').unblock();
+            }
+        });
+    });
+</script>

@@ -1,0 +1,163 @@
+﻿@model IEnumerable<WebProjekat2.BModels.TrainingBasic>
+
+<table class="table">
+    <thead>
+        <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Id)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Title)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Start)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.End)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Visit)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.TrainerName)
+                </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Title)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Start)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.End)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Visit)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TrainerName)
+            </td>
+            <td>
+                <button class="btnDelTraining btn btn-danger" data-id="@item.Id">Delete</button>
+                <button class="btnEdtTraining btn btn-primary" data-id="@item.Id">Edit</button>
+                <button class="btnAddStudents btn btn-primary" data-id="@item.Id">Add Students</button>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+
+<script>
+    function ShowEditPartial(result, trainingId) {
+        var dialog = bootbox.dialog({
+            title: 'Edit training',
+            message: result,
+            size: 'large',
+            buttons: {
+                edit: {
+                    label: "Edit",
+                    className: 'btn-success',
+                    callback: function () {
+                        
+                        var title = $('.edt.Title').val();
+                        var visit = $('.edt.Visit').val();
+                        var trainingStart = $('.edt.TrainingStart').data('datetimepicker').viewDate.toISOString();
+                        var trainingEnd = $('.edt.TrainingEnd').data('datetimepicker').viewDate.toISOString();
+                        var trainerId = $('.edt.Trainer').children("option:selected").val();
+
+                        var trainingUpdated = {
+                            id: trainingId,
+                            visit: visit,
+                            title: title,
+                            start: trainingStart,
+                            end: trainingEnd,
+                            trainerId: trainerId
+                        };
+                        EditTraining(trainingUpdated);
+                    }
+                }
+            }
+        });
+    }
+
+    function EditTraining(trainingUpdated) {
+        $.blockUI();
+        $.ajax({
+            url: "/Training/Edit/",
+            type: "POST",
+            data: { trainingUpdated: trainingUpdated },
+            success: function (result) {
+                $('#trainingsTable').html(result);
+                $.unblockUI();
+            },
+        });
+    }
+
+    $('.btnDelTraining').click(function () {
+        var id = $(this).data("id");
+
+        $.blockUI();
+        $.ajax({
+            url: "/Training/Delete/",
+            type: "POST",
+            data: { trainingId: id },
+            success: function (result) {
+                $('#trainingsTable').html(result);
+                $.unblockUI();                
+            },
+        });
+    });
+
+    $('.btnEdtTraining').click(function () {
+        var id = $(this).data("id");
+
+        $.blockUI();
+        $.ajax({
+            url: "/Training/GetTraining/",
+            type: "GET",
+            data: { trainingId : id, action: "Edit" },
+            success: function (data) {
+                
+                ShowEditPartial(data, id);
+                $.unblockUI();
+            }
+        });
+    });
+
+    $('.btnAddStudents').click(function () { 
+        var id = $(this).data("id");
+        $.blockUI();
+
+        $.ajax({
+            url: "/Training/StudentsPanel/",
+            type: "GET",
+            data: { trainingId: id },
+            success: function (result) {
+                ShowStudentsPanel(result);
+                $.unblockUI();
+            }
+        });
+    });
+
+    function ShowStudentsPanel(result) {
+        var dialog = bootbox.dialog({
+            title: 'Select students present on training',
+            message: result,
+            size: 'large',
+            buttons: {
+                close: {
+                    label: "Close",
+                    className: 'btn-success'
+                }
+            }
+        });
+    }
+</script>

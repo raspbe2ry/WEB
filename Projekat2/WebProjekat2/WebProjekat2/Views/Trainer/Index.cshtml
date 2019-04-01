@@ -1,0 +1,75 @@
+﻿@model IEnumerable<WebProjekat2.BModels.TrainerBasic>
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2 style="margin-top:80px">Trainers</h2>
+<p>
+    <button class="btnCrtTrainer btn btn-success">Create new</button>
+    <button class="btnFltTrainer btn btn-primary">Apply filter</button>
+</p>
+<div id="trainerTable">
+    @Html.Partial("_TrainersPartial", Model)
+</div>
+
+<script>
+    function RefreshTrainersTable() {
+        $.blockUI();
+        $.ajax({
+            url: "/Trainer/GetAllTrainers/",
+            type: "POST",
+            success: function (result) {
+                $('#trainerTable').html(result);
+                $.unblockUI();
+            }
+        });
+    }
+
+    function ShowCreateTrainerBox(result) {
+        var dialog = bootbox.dialog({
+            title: 'Create new trainer',
+            message: result,
+            size: 'large',
+            buttons: {
+                create: {
+                    label: "Create",
+                    className: 'btn-success',
+                    callback: function () {
+                        var fullName = $('.crt.FullName').val();
+                        var description = $('.crt.Description').val();
+                        var photo = $('.crt.Photo').val();
+                        var title = $('.crt.Title').children("option:selected").val();
+
+                        var trainer = {
+                            fullName: fullName, 
+                            description: description,
+                            photo: photo,
+                            title: title
+                        }
+
+                        $.ajax({
+                            url: "/Trainer/Create/",
+                            type: "POST",
+                            data: { trainer: trainer },
+                            success: function (result) {
+                                RefreshTrainersTable();
+                            }
+                        });
+                    }
+                }
+            }
+        });
+    }
+
+    $('.btnCrtTrainer').click(function () {
+        $.ajax({
+            url: "/Trainer/GetFor/",
+            type: "GET",
+            data: { trainerId : 0, htmlClass: "crt", actionName: "Create", controllerName: "Trainer" },
+            success: function (result) {
+                ShowCreateTrainerBox(result);
+            }
+        });
+    });
+</script>

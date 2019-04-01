@@ -1,0 +1,44 @@
+﻿@model WebProjekat2.ViewModels.StudentDetailsViewModel
+@using WebProjekat2.ViewModels;
+
+<div class="studentBeltEatnings">
+    @Html.Partial("../BeltEarning/_BeltEarningsMiniPartial.cshtml", Model.BeltEarnings)
+</div>
+<div style="margin-bottom: 2px; margin-top: 2px; background-color:#f2f2f2">
+    <div class="container">
+        <h4>Add Belt Earning</h4>
+        <button type="button" class="btn btn-info" data-toggle="collapse" data-target="#addEarning">Add belt earning</button>
+        <div id="addEarning" class="collapse">
+            @Html.Partial("../BeltEarning/_BeltEarningPartial.cshtml", new BeltEarningViewModel() { BeltEarningBasic = Model.BeltEarningToCreate, ActionName = "Create", ControllerName = "BeltEarning", HtmlClass = "crt", Trainers= Model.Trainers })
+        </div>
+    </div>
+</div>
+<div class="studentTrainings">
+    @Html.Partial("../Training/_TrainingsMiniPartial.cshtml", Model.Trainings)
+</div>
+
+<script>
+    $('.crt.Create').click(function () {
+        debugger;
+        var earnDate = $('.crt.EarnDate').data('datetimepicker').viewDate.toISOString();
+        var title = $('.crt.Belt').children("option:selected").val();
+        var success = $('.crt.Success')[0].checked;
+        var id = $('.crt.StudentId').val();
+
+        var beltEarning = {
+            studentId: id,
+            earnDate: earnDate,
+            success: success,
+            belt: title
+        }
+
+        $.ajax({
+            url: "/BeltEarning/Create/",
+            type: "POST",
+            data: { beltEarning: beltEarning },
+            success: function (result) {
+                $('.studentBeltEatnings').html(result);
+            }
+        });
+    });
+</script>

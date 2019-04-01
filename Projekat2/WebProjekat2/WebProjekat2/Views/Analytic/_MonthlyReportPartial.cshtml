@@ -1,0 +1,53 @@
+﻿@model WebProjekat2.BL.ReportModel
+
+<div style="background-color:#e6f2ff">
+    <h3>@Model.Month</h3>
+    @if (Model.NumOfTrainings > 0)
+    {
+        <ul>
+            @if (ViewBag.ReportConfig.NumOfTrainings)
+            {
+                <li><label for="@Model.NumOfTrainings">Number of trainings:</label>@Model.NumOfTrainings</li>
+            }
+            @if (ViewBag.ReportConfig.NewStudents)
+            {
+                <li><label for="@Model.NewStudents">New students:</label>@Model.NewStudents</li>
+            }
+            @if (ViewBag.ReportConfig.MaxStudents)
+            {
+                <li><label for="@Model.MaxNumOnTraining">Maximum students on training:</label>@Model.MaxNumOnTraining</li>
+                <li><label for="@Model.DateWithMaxStudents">Training with maximum students:</label>@Model.DateWithMaxStudents</li>
+            }
+            @if (ViewBag.ReportConfig.MinStudents)
+            {
+                <li><label for="@Model.MinNumOnTraining">Minimum students on training:</label>@Model.MinNumOnTraining</li>
+                <li><label for="@Model.DateWithMaxStudents">Training with minumum students:</label>@Model.DateWithMinStudents</li>
+            }
+            <li><label for="@Model.AverageOnTraining">Average students on training:</label>@Model.AverageOnTraining</li>
+        </ul>
+        @if (ViewBag.ReportConfig.NewBeltEarnings)
+        {
+            @if (Model.NewBeltEarningsByBelt == null)
+            {
+                <ul>
+                    <li><label for="@Model.NewBeltEarnings">New belt earnings:</label>@Model.NewBeltEarnings</li>
+                </ul>
+            }
+            else
+            {
+                <h5><strong>New belt earnings</strong></h5>
+                <ul>
+                    @foreach (var beltType in Model.NewBeltEarningsByBelt)
+                    {
+                        <li><strong>@beltType.belt:</strong> @beltType.count</li>
+                    }
+                </ul>
+
+            }
+        }
+    }
+    else
+    { 
+        <p style="color: red; font-size: 30px;">No data for selected month</p>
+    }
+</div>

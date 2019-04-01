@@ -1,0 +1,74 @@
+﻿@model IList<WebProjekat2.BModels.StudentTraining>
+
+<div>
+@for(int i=0; i<Model.Count(); i=i+3)
+{
+    <div class="row">
+        <div class="col-sm-4">
+            <label>@Model[i].StudentName</label>
+            @if (Model[i].Present)
+            {
+                <input class="studentTrC" type="checkbox" data-student="@Model[i].StudentId" data-training="@Model[i].TrainingId" checked />
+            }
+            else
+            {
+                <input class="studentTrC" type="checkbox" data-student="@Model[i].StudentId" data-training="@Model[i].TrainingId" />
+            }
+        </div>
+        @if (i+1 < Model.Count())
+        {
+        <div class="col-sm-4">
+            <label>@Model[i + 1].StudentName</label>
+            @if (Model[i+1].Present)
+            {
+                <input class="studentTrC" type="checkbox" data-student="@Model[i+1].StudentId" data-training="@Model[i+1].TrainingId" checked />
+            }
+            else
+            {
+                <input class="studentTrC" type="checkbox" data-student="@Model[i+1].StudentId" data-training="@Model[i+1].TrainingId" />
+            }
+        </div>
+        }
+        @if (i+2 < Model.Count())
+        {
+        <div class="col-sm-4">
+            <label>@Model[i + 2].StudentName</label>
+            @if (Model[i + 1].Present)
+            {
+                <input class="studentTrC" type="checkbox" data-student="@Model[i+2].StudentId" data-training="@Model[i+2].TrainingId" checked />
+            }
+            else
+            {
+                <input class="studentTrC" type="checkbox" data-student="@Model[i+2].StudentId" data-training="@Model[i+2].TrainingId" />
+            }
+        </div>
+        }
+    </div>
+}
+</div>
+
+<script>
+    $('.studentTrC').change(function () {
+        debugger;
+        var that = $(this);
+        var trainingId = $(this).data("training");
+        var studentId = $(this).data("student");
+        var presence = !$(this).checked;
+        $(this).attr("disabled", true);
+
+
+        $.ajax({
+            url: "/Training/ChangeStudentPresence/",
+            type: "POST",
+            data: {
+                trainingId,
+                studentId,
+                presence,
+            },
+            success: function () {
+                that.attr("disabled", false);
+            }
+        });
+
+    });
+</script>

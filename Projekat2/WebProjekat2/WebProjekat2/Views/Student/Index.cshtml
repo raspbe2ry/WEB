@@ -1,0 +1,119 @@
+﻿@using WebProjekat2.ViewModels;
+@using WebProjekat2.BModels;
+@model IEnumerable<WebProjekat2.BModels.StudentBasic>;
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="~/css/StudentStyles.css" rel="stylesheet" />
+
+<h2 style="margin-top: 80px">Students</h2>
+
+    <table class="table" id="tblStudent">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.FullName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Title)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.TrainingStart)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr class="studentRow" data-id="@item.Id">
+                    <td>
+                        @Html.HiddenFor(modelItem => item.Id)
+                        @Html.DisplayFor(modelItem => item.FullName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Title)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.TrainingStart)
+                    </td>
+                    <td>
+                        <button class="btnDelStudent btn btn-danger" data-id="@item.Id">Delete</button>
+                        <button class="btnEditStudent btn btn-primary" data-id="@item.Id">Edit</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="row">
+        <div class="col-sm-4" style="margin:20px; border:1px solid #5e5c5c; border-radius:10px; background-color:rgb(197, 205, 209)">
+            @Html.Partial("_StudentPartial", new StudentViewModel() { StudentBasic = new StudentBasic(), HtmlClass = "crt", ControllerName = "Student", ActionName = "Create" })
+        </div>
+    </div>
+
+<script>
+    function openEditBox(result) {
+        var dialog = bootbox.dialog({
+            title: 'Edit Student',
+            message: result,
+            size: 'large'
+        });
+    }
+
+    function ShowStudentDetails(result, studentId) {
+        debugger;
+
+        var dialog = bootbox.dialog({
+            title: 'Details',
+            message: result,
+            size: 'large'
+        });        
+    }
+
+    $('.btnDelStudent').click(function (event) {
+        event.stopPropagation();
+        var id = $(this).data("id");
+
+        $.ajax({
+            url: "/Student/Delete/",
+            type: "POST",
+            data: { studentId : id },
+            success: function (result) {
+                console.log("Deleted");
+            }
+        });
+    });
+
+    $('.btnEditStudent').click(function (event) {
+        event.stopPropagation();
+        var id = $(this).data("id");
+
+        $.ajax({
+            url: "/Student/GetForEdit/",
+            type: "GET",
+            data: { studentId: id },
+            success: function (result) {
+                openEditBox(result);
+            }
+        });
+    });
+
+    $('.studentRow').click(function () {
+        var id = $(this).data("id");
+
+        $.ajax({
+            url: "/Student/StudentDetails/",
+            type: "GET",
+            data: { studentId: id },
+            success: function (result) {
+                ShowStudentDetails(result, id);
+            }
+        });
+    });
+
+</script>
+
+

@@ -1,0 +1,51 @@
+﻿@model WebProjekat2.ViewModels.TrainingViewModel
+@using WebProjekat2.Models
+
+<div class="form-group">
+    <label for="Title">Title</label>
+    <input type="text" class="form-control @Model.HtmlClass Title" value="@Model.TrainingBasic.Title" placeholder="Enter training description">
+</div>
+<div class="row">
+    <div class="form-group col-sm-6">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="@Model.HtmlClass TrainingStart"></div>
+            </div>
+        </div>
+    </div>
+    <div class="form-group col-sm-6">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="@Model.HtmlClass TrainingEnd"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="form-group">
+    <label for="Training visit">Training visit</label>
+    <input class="span2  @Model.HtmlClass Visit" value="@Model.TrainingBasic.Visit" type="number">
+</div>
+<div class="form-group">
+    <label for="trainerPart">Trainer</label>
+    @Html.DropDownListFor(Model => Model.TrainingBasic.TrainerId, Model.Trainers, "SelectTrainer", new { @class = Model.HtmlClass+ " Trainer" })
+</div>
+
+<script>
+    var htmlClass='@Model.HtmlClass';
+    var startTime = new Date("@Model.TrainingBasic.Start");
+    var endTime = new Date("@Model.TrainingBasic.End");
+
+    $('.' + htmlClass + '.TrainingStart').datetimepicker({
+        inline: true,
+        sideBySide: true,
+        defaultDate: startTime,
+    });
+    $('.' + htmlClass + '.TrainingEnd').datetimepicker({
+        inline: true,
+        sideBySide: true,
+        defaultDate: endTime,
+    });
+
+    $('.' + htmlClass + '.TrainingStart').datetimepicker('setDate', startTime);
+    $('.' + htmlClass + '.TrainingEnd').datetimepicker('setDate', endTime);
+</script>

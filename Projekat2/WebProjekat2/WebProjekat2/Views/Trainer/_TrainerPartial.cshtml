@@ -1,0 +1,19 @@
+﻿@model WebProjekat2.ViewModels.TrainerViewModel;
+@using WebProjekat2.Models;
+
+<div class="form-group">
+    <label for="FullName">FullName</label>
+    <input type="text" class="form-control @Model.HtmlClass FullName" value="@Model.TrainerBasic.FullName" placeholder="Enter trainer Full Name">
+</div>
+<div class="form-group">
+    <label for="Description">Description</label>
+    <input type="text" class="form-control @Model.HtmlClass Description" value="@Model.TrainerBasic.Description" placeholder="Enter trainer description">
+</div>
+<div class="form-group">
+    <label for="Photo">Photo</label>
+    <input type="text" class="form-control @Model.HtmlClass Photo" value="@Model.TrainerBasic.Photo" placeholder="Enter trainer photo URL">
+</div>
+<div class="form-group">
+    <label for="trainerTitle">Title</label>
+    @Html.DropDownListFor(Model => Model.TrainerBasic.Title, Enum.GetValues(typeof(KarateTitle)).Cast<KarateTitle>().Select(x => new SelectListItem { Text = x.ToString(), Value = ((int)x).ToString() }))
+</div>
