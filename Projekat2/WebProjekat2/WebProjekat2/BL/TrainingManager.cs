@@ -12,11 +12,11 @@ namespace WebProjekat2.BL
 {
     public class TrainingManager: ITraining
     {
-        public KarateContext data { get; set; }
+        UnitOfWork unitOfWork;
 
-        public TrainingManager(KarateContext context)
+        public TrainingManager(UnitOfWork unitOfWork)
         {
-            data = context;
+            this.unitOfWork = unitOfWork;
         }
 
         public int AddTraining(TrainingBasic trainingBasic)
@@ -31,15 +31,15 @@ namespace WebProjekat2.BL
                     Visit = trainingBasic.Visit,
                 };
 
-                Trainer trainer = data.Trainers.Find(trainingBasic.TrainerId);
-                if(trainer!=null)
+                Trainer trainer = unitOfWork.TrainerRepository.GetByID(trainingBasic.TrainerId);
+                if(trainer != null)
                 {
                     trainer.Trainings.Add(training);
                     training.Trainer = trainer;
                 }
 
-                data.Trainings.Add(training);
-                data.SaveChanges();
+                unitOfWork.TrainingRepository.Insert(training);
+                unitOfWork.Save();
 
                 return training.Id;
             }
@@ -53,8 +53,8 @@ namespace WebProjekat2.BL
         {
             try
             {
-                Trainer trainer = data.Trainers.Find(trainerId);
-                Training training = data.Trainings.Find(trainingId);
+                Trainer trainer = unitOfWork.TrainerRepository.GetByID(trainerId);
+                Training training = unitOfWork.TrainingRepository.GetByID(trainingId);
                 if (trainer != null && training != null)
                 {
                     trainer.Trainings.Add(training);
@@ -65,7 +65,7 @@ namespace WebProjekat2.BL
                     return 404;
                 }
 
-                data.SaveChanges();
+                unitOfWork.Save();
                 return 1;
             }
             catch(Exception ex)
@@ -78,17 +78,18 @@ namespace WebProjekat2.BL
         {
             try
             {
-                Training training = data.Trainings.Find(trainingId);
+                Training training = unitOfWork.TrainingRepository.GetByID(trainingId);
                 if (training != null)
                 {
                     training.Title=description;
+                    unitOfWork.TrainingRepository.Update(training);
                 }
                 else
                 {
                     return false;
                 }
 
-                data.SaveChanges();
+                unitOfWork.Save();
                 return true;
             }
             catch (Exception ex)
@@ -99,13 +100,14 @@ namespace WebProjekat2.BL
 
         public List<TrainingBasic> GetAllTrainings(DateRange dateRange)
         {
-            if (dateRange != null)
+            if( dateRange != null )
             {
-                return data.Trainings.Where(x =>
+                return unitOfWork.TrainingRepository.Get(x =>
                                             (dateRange.StartDate != null ? x.Start > dateRange.StartDate : true)
                                             &&
                                             (dateRange.EndDate != null ? x.Start < dateRange.EndDate : true)
-                                            )
+                                            , null
+                                            , "")
                                             .Select(x => new TrainingBasic()
                                             {
                                                 Id = x.Id,
@@ -114,11 +116,16 @@ namespace WebProjekat2.BL
                                                 End = x.Finish,
                                                 Visit = x.Visit,
                                                 TrainerId = x.TrainerId,
-                                                TrainerName = data.Trainers.Where(m => m.Id == x.TrainerId).Select(m => m.FullName).FirstOrDefault(),
+                                                TrainerName = unitOfWork.TrainerRepository.Get(m => m.Id == x.TrainerId).Select(m => m.FullName).FirstOrDefault(),
                                             }).ToList();
             }
             else
-                return data.Trainings.Select(x => new TrainingBasic()
+            {
+                return unitOfWork.TrainingRepository.Get(
+                                            null
+                                            , null
+                                            , "")
+                                            .Select(x => new TrainingBasic()
                                             {
                                                 Id = x.Id,
                                                 Title = x.Title,
@@ -126,19 +133,20 @@ namespace WebProjekat2.BL
                                                 End = x.Finish,
                                                 Visit = x.Visit,
                                                 TrainerId = x.TrainerId,
-                                                TrainerName = data.Trainers.Where(m => m.Id == x.TrainerId).Select(m => m.FullName).FirstOrDefault(),
+                                                TrainerName = unitOfWork.TrainerRepository.Get(m => m.Id == x.TrainerId).Select(m => m.FullName).FirstOrDefault(),
                                             }).ToList();
+            }
         }
 
         public bool DeleteTraining(int trainingId)
         {
             try
             {
-                Training trainingToRemove = data.Trainings.Find(trainingId);
+                Training trainingToRemove = unitOfWork.TrainingRepository.GetByID(trainingId);
                 if (trainingToRemove != null)
                 {
-                    var training = data.Trainings.Remove(trainingToRemove);
-                    data.SaveChanges();
+                    unitOfWork.TrainingRepository.Delete(trainingToRemove);
+                    unitOfWork.Save();
 
                     return true;
                 }
@@ -153,8 +161,8 @@ namespace WebProjekat2.BL
 
         public TrainingBasic GetTraining(int trainingId)
         {
-            Training training = data.Trainings.Find(trainingId);
-            Trainer trainer = data.Trainers.Find(training.TrainerId);
+            Training training = unitOfWork.TrainingRepository.GetByID(trainingId);
+            Trainer trainer = unitOfWork.TrainerRepository.GetByID(training.TrainerId);
 
             if (training != null)
             {
@@ -177,7 +185,7 @@ namespace WebProjekat2.BL
         {
             try
             {
-                Training training = data.Trainings.Find(trainingUpdated.Id);
+                Training training = unitOfWork.TrainingRepository.GetByID(trainingUpdated.Id);
 
                 if (training != null)
                 {
@@ -188,15 +196,13 @@ namespace WebProjekat2.BL
 
                     if(training.TrainerId != trainingUpdated.TrainerId)
                     {
-                        Trainer newTrainer = data.Trainers.Find(trainingUpdated.TrainerId);
-                        Trainer oldTrainer = data.Trainers.Find(training.TrainerId);
+                        Trainer newTrainer = unitOfWork.TrainerRepository.GetByID(trainingUpdated.TrainerId);
+                        Trainer oldTrainer = unitOfWork.TrainerRepository.GetByID(training.TrainerId);
                         training.Trainer = newTrainer;
-                        if(oldTrainer != null)
-                            oldTrainer.Trainings.Remove(training);
-                        newTrainer.Trainings.Add(training);
+                        unitOfWork.TrainingRepository.Update(training);
                     }
 
-                    data.SaveChanges();
+                    unitOfWork.Save();
 
                     return true;
                 }
@@ -215,19 +221,17 @@ namespace WebProjekat2.BL
         {
             try
             {
-                Student student = data.Students.Include(x => x.Trainings).Where(x => x.Id == StudentId).FirstOrDefault();
-                List<int> trainingIds = student.Trainings.Select(x=>x.TrainingId).ToList();
-                List<TrainingBasic> trainings = data.Trainings.Where(x => trainingIds.Contains(x.Id))
-                                                    .Select(x => new TrainingBasic()
-                                                    {
-                                                        Id = x.Id,
-                                                        End = x.Finish, 
-                                                        Start = x.Start,
-                                                        Title = x.Title,
-                                                        Visit = x.Visit
-                                                    }).ToList();
+                List<int> trainingIds = unitOfWork.StudentTrainingRepository.Get(x=>x.StudentId == StudentId).Select(x=> x.TrainingId).ToList();
+                List<TrainingBasic> trainingBasics =unitOfWork.TrainingRepository.Get(x=> trainingIds.Contains(x.Id)).Select(x => new TrainingBasic()
+                {
+                    Id = x.Id,
+                    End = x.Finish,
+                    Start = x.Start,
+                    Title = x.Title,
+                    Visit = x.Visit
+                }).ToList();
 
-                return trainings;
+                return trainingBasics;
             }
             catch(Exception ex)
             {
@@ -237,17 +241,16 @@ namespace WebProjekat2.BL
 
         public List<BModels.StudentTraining> GetStudents(int trainingId)
         {
-            List<BModels.StudentTraining> studentTrainings =
-                (from student in data.Students
-                 from stTr in data.StudentTrainings.Where(x=>x.TrainingId == trainingId && student.Id == x.StudentId).DefaultIfEmpty()
-                 from training in data.Trainings.Where(x => x.Id == stTr.TrainingId).DefaultIfEmpty()
-                 select new BModels.StudentTraining()
-                 {
-                     StudentId = student.Id,
-                     TrainingId = trainingId,
-                     Present = (training != null),
-                     StudentName = student.FullName
-                 }).ToList();
+            List<int> studentIds = unitOfWork.StudentTrainingRepository.Get(x => x.TrainingId == trainingId)
+                .Select(x => x.StudentId).ToList();
+            List<BModels.StudentTraining> studentTrainings = unitOfWork.StudentRepository.Get(null, null, "").
+                Select(x => new BModels.StudentTraining()
+                {
+                    StudentId = x.Id,
+                    TrainingId = trainingId,
+                    Present = studentIds.Contains(x.Id),
+                    StudentName = x.FullName
+                }).ToList();
 
             return studentTrainings;
         }
@@ -261,14 +264,14 @@ namespace WebProjekat2.BL
                     StudentId = studentId,
                     TrainingId = trainingId
                 };
-                data.StudentTrainings.Add(studentTraining);
+                unitOfWork.StudentTrainingRepository.Insert(studentTraining);
             }
             else
             {
-                Models.StudentTraining studentTraining = data.StudentTrainings.Where(x => x.StudentId == studentId && x.TrainingId == trainingId).First();
-                data.StudentTrainings.Remove(studentTraining);
+                Models.StudentTraining studentTraining = unitOfWork.StudentTrainingRepository.Get(x => x.StudentId == studentId && x.TrainingId == trainingId).First();
+                unitOfWork.StudentTrainingRepository.Delete(studentTraining);
             }
-            data.SaveChanges();
+            unitOfWork.Save();
 
             return true;
         }

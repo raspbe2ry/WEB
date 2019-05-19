@@ -12,26 +12,26 @@ namespace WebProjekat2.BL
 {
     public class StudentManager : IStudent
     {
-        public KarateContext data { get; set; }
+        public UnitOfWork unitOfWork;
 
-        public StudentManager(KarateContext context)
+        public StudentManager(UnitOfWork unitOfWork)
         {
-            data = context;
+            this.unitOfWork = unitOfWork;
         }
 
         public int AddStudent(StudentBasic basicStudent)
         {
             try
             {
-                Models.Student student = new Models.Student()
+                Student student = new Student()
                 {
                     FullName = basicStudent.FullName,
                     Title = basicStudent.TitleId,
                     TrainingDate = basicStudent.TrainingStart,
                 };
 
-                data.Students.Add(student);
-                data.SaveChanges();
+                unitOfWork.StudentRepository.Insert(student);
+                unitOfWork.Save();
 
                 return student.Id;
             }
@@ -45,11 +45,11 @@ namespace WebProjekat2.BL
         {
             try
             {
-                Student studentToRemove = data.Students.Find(StudentId);
+                Student studentToRemove = unitOfWork.StudentRepository.GetByID(StudentId);
                 if (studentToRemove != null)
                 {
-                    var student = data.Students.Remove(studentToRemove);
-                    data.SaveChanges();
+                    unitOfWork.StudentRepository.Delete(studentToRemove);
+                    unitOfWork.Save();
 
                     return true;
                 }
@@ -64,7 +64,7 @@ namespace WebProjekat2.BL
 
         public List<StudentBasic> GetAllStudents()
         {
-            return data.Students.Select(x => new StudentBasic()
+            return unitOfWork.StudentRepository.Get().Select(x => new StudentBasic()
             {
                 FullName=x.FullName,
                 Id=x.Id,
@@ -75,9 +75,8 @@ namespace WebProjekat2.BL
 
         public StudentBasic GetStudent(int StudentId)
         {
-            Student student = data.Students.Include(x => x.BeltEarnings)
-                                            .Include(x => x.Trainings)
-                                            .Where(x=> x.Id == StudentId).FirstOrDefault();
+            Student student = unitOfWork.StudentRepository.Get(x => x.Id == StudentId, null, "BeltEarnings,Trainings")
+                .First();
 
             if (student != null)
             {
@@ -98,14 +97,15 @@ namespace WebProjekat2.BL
         {
             try
             {
-                Student student = data.Students.Find(studentBasic.Id);
+                Student student = unitOfWork.StudentRepository.GetByID(studentBasic.Id);
                 if (student != null)
                 {
                     student.FullName = studentBasic.FullName;
                     student.Title = studentBasic.TitleId;
                     student.TrainingDate = studentBasic.TrainingStart;
 
-                    data.SaveChanges();
+                    unitOfWork.StudentRepository.Update(student);
+                    unitOfWork.Save();
 
                     return studentBasic.Id;
                 }

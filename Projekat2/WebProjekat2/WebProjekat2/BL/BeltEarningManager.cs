@@ -12,11 +12,11 @@ namespace WebProjekat2.BL
 {
     public class BeltEarningManager : IBeltEarning
     {
-        public KarateContext data { get; set; }
+        public UnitOfWork unitOfWork;
 
-        public BeltEarningManager(KarateContext context)
+        public BeltEarningManager(UnitOfWork unitOfWork)
         {
-            data = context;
+            this.unitOfWork = unitOfWork;
         }
 
         public int AddBeltEarning(BeltEarningBasic beltEarningBasic)
@@ -31,12 +31,12 @@ namespace WebProjekat2.BL
                     Success=beltEarningBasic.Success
                 };
 
-                Student student = data.Students.Find(beltEarningBasic.StudentId);
+                Student student = unitOfWork.StudentRepository.GetByID(beltEarningBasic.StudentId);
                 if (student != null)
                     student.BeltEarnings.Add(beltEarning);
 
-                data.BeltEarnings.Add(beltEarning);
-                data.SaveChanges();
+                unitOfWork.BeltEarningRepository.Insert(beltEarning);
+                unitOfWork.Save();
 
                 return beltEarning.Id;
             }
@@ -50,7 +50,7 @@ namespace WebProjekat2.BL
         {
             try
             {
-                Student student = data.Students.Include(x=> x.BeltEarnings).Where(x=>x.Id ==  studentId).FirstOrDefault();
+                Student student = unitOfWork.StudentRepository.Get(x => x.Id == studentId, null, "BeltEarnings").FirstOrDefault();
                 return student.BeltEarnings.Select(x => new BeltEarningBasic()
                 {
                     Id = x.Id,
@@ -70,7 +70,7 @@ namespace WebProjekat2.BL
         {
             try
             {
-                return data.BeltEarnings.Include(x=> x.Student).Select(x => new BeltEarningBasic()
+                return unitOfWork.BeltEarningRepository.Get(null, null, "Student").Select(x => new BeltEarningBasic()
                 {
                     Id = x.Id,
                     StudentId = x.Id,
@@ -90,11 +90,11 @@ namespace WebProjekat2.BL
         {
             try
             {
-                BeltEarning beltEarningToRemove = data.BeltEarnings.Find(beltEarningId);
+                BeltEarning beltEarningToRemove = unitOfWork.BeltEarningRepository.GetByID(beltEarningId);
                 if (beltEarningToRemove != null)
                 {
-                    var beltEarning = data.BeltEarnings.Remove(beltEarningToRemove);
-                    data.SaveChanges();
+                    unitOfWork.BeltEarningRepository.Delete(beltEarningToRemove);
+                    unitOfWork.Save();
 
                     return true;
                 }

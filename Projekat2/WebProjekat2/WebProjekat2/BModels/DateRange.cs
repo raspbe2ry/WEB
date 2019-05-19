@@ -10,6 +10,17 @@ namespace WebProjekat2.BModels
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
 
+        public DateRange()
+        {
+
+        }
+
+        public DateRange(DateTime startDate, DateTime endDate)
+        {
+            this.StartDate = startDate;
+            this.EndDate = endDate;
+        }
+
         public DateRange(string monthAndYear)
         {
             string[] date = monthAndYear.Split("/");

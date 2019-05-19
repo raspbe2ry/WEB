@@ -18,6 +18,7 @@ using WebProjekat2.IBL;
 using WebProjekat2.BL;
 using WebProjekat2.MvcControllers;
 using WebProjekat2.Controllers;
+using WebProjekat2.Models;
 
 namespace WebProjekat2
 {
@@ -41,7 +42,7 @@ namespace WebProjekat2
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            //services.AddDbContext<KarateContext>(options=> options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContext<KarateContext>(options=> options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddMvc();
             services.AddCors(options =>
@@ -89,11 +90,16 @@ namespace WebProjekat2
             db.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
 
             kernel.Bind<DbContext>().To<KarateContext>().InRequestScope().WithConstructorArgument("options", db.Options);
-            kernel.Bind<IStudent>().To<StudentManager>().InRequestScope().WithConstructorArgument("context", kernel.Get<DbContext>());
-            kernel.Bind<IBeltEarning>().To<BeltEarningManager>().InRequestScope().WithConstructorArgument("context", kernel.Get<DbContext>());
-            kernel.Bind<ITrainer>().To<TrainerManager>().InRequestScope().WithConstructorArgument("context", kernel.Get<DbContext>());
-            kernel.Bind<ITraining>().To<TrainingManager>().InRequestScope().WithConstructorArgument("context", kernel.Get<DbContext>());
-            kernel.Bind<AnalyticsManager>().To<AnalyticsManager>().InRequestScope().WithConstructorArgument("context", kernel.Get<DbContext>());
+            kernel.Bind<UnitOfWork>().To<UnitOfWork>().InRequestScope().WithConstructorArgument("context", kernel.Get<DbContext>());
+
+            kernel.Bind<ITraining>().To<TrainingManager>().InRequestScope().WithConstructorArgument("unitOfWork", kernel.Get<UnitOfWork>());
+            kernel.Bind<ITrainer>().To<TrainerManager>().InRequestScope().WithConstructorArgument("unitOfWork", kernel.Get<UnitOfWork>());
+            kernel.Bind<IStudent>().To<StudentManager>().InRequestScope().WithConstructorArgument("unitOfWork", kernel.Get<UnitOfWork>());
+            kernel.Bind<IBeltEarning>().To<BeltEarningManager>().InRequestScope().WithConstructorArgument("unitOfWork", kernel.Get<UnitOfWork>());
+            kernel.Bind<ApiTrainingManager>().To<ApiTrainingManager>().InRequestScope().WithConstructorArgument("unitOfWork", kernel.Get<UnitOfWork>());
+            kernel.Bind<ApiTrainerManager>().To<ApiTrainerManager>().InRequestScope().WithConstructorArgument("unitOfWork", kernel.Get<UnitOfWork>());
+            kernel.Bind<AnalyticsManager>().To<AnalyticsManager>().InRequestScope().WithConstructorArgument("unitOfWork", kernel.Get<UnitOfWork>())
+                .WithConstructorArgument("context", kernel.Get<DbContext>());
 
             kernel.Bind<StudentController>().To<StudentController>().InRequestScope().WithConstructorArgument("studentManager", kernel.Get<IStudent>())
                                                                                      .WithConstructorArgument("beltEarningManager", kernel.Get<IBeltEarning>())
@@ -105,9 +111,8 @@ namespace WebProjekat2
             kernel.Bind<BeltEarningController>().To<BeltEarningController>().InRequestScope().WithConstructorArgument("beltEarningManager", kernel.Get<IBeltEarning>());
             kernel.Bind<AnalyticController>().To<AnalyticController>().InRequestScope().WithConstructorArgument("analyticManager", kernel.Get<AnalyticsManager>());
 
-            kernel.Bind<ApiTrainerManager>().To<ApiTrainerManager>().InRequestScope().WithConstructorArgument("context", kernel.Get<DbContext>());
-            kernel.Bind<TrainingsController>().To<TrainingsController>().InRequestScope().WithConstructorArgument("trainingManager", kernel.Get<ApiTrainerManager>());
-
+            kernel.Bind<TrainersController>().To<TrainersController>().InRequestScope().WithConstructorArgument("trainerManager", kernel.Get<ApiTrainerManager>());
+            kernel.Bind<TrainingsController>().To<TrainingsController>().InRequestScope().WithConstructorArgument("trainingManager", kernel.Get<ApiTrainingManager>());
 
             // Cross-wire required framework services
             kernel.BindToMethod(app.GetRequestService<IViewBufferScope>);

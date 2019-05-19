@@ -33,7 +33,7 @@
         {
         <div class="col-sm-4">
             <label>@Model[i + 2].StudentName</label>
-            @if (Model[i + 1].Present)
+            @if (Model[i + 2].Present)
             {
                 <input class="studentTrC" type="checkbox" data-student="@Model[i+2].StudentId" data-training="@Model[i+2].TrainingId" checked />
             }
@@ -53,9 +53,7 @@
         var that = $(this);
         var trainingId = $(this).data("training");
         var studentId = $(this).data("student");
-        var presence = !$(this).checked;
-        $(this).attr("disabled", true);
-
+        var presence = $(this)[0].checked;
 
         $.ajax({
             url: "/Training/ChangeStudentPresence/",

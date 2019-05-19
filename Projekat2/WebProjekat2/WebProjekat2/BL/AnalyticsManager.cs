@@ -5,16 +5,19 @@ using System.Linq;
 using System.Threading.Tasks;
 using WebProjekat2.BModels;
 using WebProjekat2.Data;
+using WebProjekat2.IBL;
 
 namespace WebProjekat2.BL
 {
     public class AnalyticsManager
     {
-        public KarateContext data { get; set; }
+        private UnitOfWork unitOfWork;
+        private KarateContext data;
 
-        public AnalyticsManager(KarateContext context)
+        public AnalyticsManager(UnitOfWork unitOfWork, KarateContext context)
         {
-            data = context;
+            this.unitOfWork = unitOfWork;
+            this.data = context;
         }
 
         public ReportModel GetReport(ReportConfiguration conf)
@@ -27,15 +30,15 @@ namespace WebProjekat2.BL
             var trainingQuery = data.Trainings.Where(x => x.Start > dateRange.StartDate && x.Start < dateRange.EndDate);
 
             var studentQuery = (from training in trainingQuery
-                         from studentTraining in data.StudentTrainings.Where(x=>x.TrainingId == training.Id).DefaultIfEmpty()
-                         join student in data.Students on studentTraining.StudentId equals student.Id into gr
-                         group gr by new { training.Id, training.Start } into grouped
-                         select new
-                         {
-                             p0 = grouped.Key.Id,
-                             p1 = grouped.Key.Start,
-                             p2 = grouped.Count()
-                         });
+                                from studentTraining in data.StudentTrainings.Where(x => x.TrainingId == training.Id).DefaultIfEmpty()
+                                join student in data.Students on studentTraining.StudentId equals student.Id into gr
+                                group gr by new { training.Id, training.Start } into grouped
+                                select new
+                                {
+                                    p0 = grouped.Key.Id,
+                                    p1 = grouped.Key.Start,
+                                    p2 = grouped.Count()
+                                });
 
             if (studentQuery.Count() > 0)
             {
@@ -61,14 +64,14 @@ namespace WebProjekat2.BL
             }
 
             if(conf.NewStudents)
-                result.NewStudents = data.Students.Where(x => x.TrainingDate > dateRange.StartDate && x.TrainingDate < dateRange.EndDate)
+                result.NewStudents = unitOfWork.StudentRepository.Get(x => x.TrainingDate > dateRange.StartDate && x.TrainingDate < dateRange.EndDate)
                                             .Count();
 
             result.NumOfTrainings = trainingQuery.Count();
 
             if(conf.NewBeltEarnings && conf.ByTitle)
             {
-                result.NewBeltEarningsByBelt = data.BeltEarnings.Where(x => x.EarnDate > dateRange.StartDate && x.EarnDate < dateRange.EndDate)
+                result.NewBeltEarningsByBelt = unitOfWork.BeltEarningRepository.Get(x => x.EarnDate > dateRange.StartDate && x.EarnDate < dateRange.EndDate)
                                                         .GroupBy(x => x.Belt)
                                                         .Select(x =>
                                                         new BeltEarningsStruct
@@ -80,7 +83,7 @@ namespace WebProjekat2.BL
             }
             else if (conf.NewBeltEarnings)
             {
-                result.NewBeltEarnings = data.BeltEarnings.Where(x => x.EarnDate > dateRange.StartDate && x.EarnDate < dateRange.EndDate)
+                result.NewBeltEarnings = unitOfWork.BeltEarningRepository.Get(x => x.EarnDate > dateRange.StartDate && x.EarnDate < dateRange.EndDate)
                                                         .Count();
             }
 

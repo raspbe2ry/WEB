@@ -67,10 +67,27 @@ namespace WebProjekat2.Controllers
 
         [Route("getAllTrainings")]
         [HttpGet]
-        public ActionResult GetAllTrainings(DateRange dateRange)
+        public ActionResult GetAllTrainings(DateTime start, DateTime end)
         {
-            var res = trainingManager.GetAllTrainings(dateRange);
-            return Ok(res);
+            DateRange dateRange = new DateRange(start, end);
+            var trainings = trainingManager.GetAllTrainings(dateRange);
+            return Ok(trainings);
+        }
+
+        [Route("getTraining")]
+        [HttpGet]
+        public ActionResult GetTraining(int trainingId)
+        {
+            var training = trainingManager.GetTraining(trainingId);
+            return Ok(training);
+        }
+
+        [Route("addVisitToTraining")]
+        [HttpGet]
+        public ActionResult AddVisitToTraining(int trainingId)
+        {
+            bool result = trainingManager.EditTraining(trainingManager.GetTraining(trainingId));
+            return Ok(result);
         }
     }
 }

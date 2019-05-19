@@ -12,11 +12,11 @@ namespace WebProjekat2.BL
 {
     public class TrainerManager : ITrainer
     {
-        public KarateContext data { get; set; }
+        private UnitOfWork unitOfWork;
 
-        public TrainerManager(KarateContext context)
+        public TrainerManager(UnitOfWork unitOfWork)
         {
-            data = context;
+            this.unitOfWork = unitOfWork;
         }
 
         public int AddTrainer(TrainerBasic trainerBasic)
@@ -31,8 +31,8 @@ namespace WebProjekat2.BL
                     Title=trainerBasic.Title
                 };
 
-                data.Trainers.Add(trainer);
-                data.SaveChanges();
+                unitOfWork.TrainerRepository.Insert(trainer);
+                unitOfWork.Save();
 
                 return trainer.Id;
             }
@@ -46,9 +46,9 @@ namespace WebProjekat2.BL
         {
             try
             {
-                var trainer = data.Trainers.Find(TrainerId);
-                data.Trainers.Remove(trainer);
-                data.SaveChanges();
+                var trainer = unitOfWork.TrainerRepository.GetByID(TrainerId);
+                unitOfWork.TrainerRepository.Delete(trainer);
+                unitOfWork.Save();
 
                 return true;
             }
@@ -60,7 +60,7 @@ namespace WebProjekat2.BL
 
         public List<TrainerBasic> GetAllTrainers()
         {
-            return data.Trainers.Select(x => new TrainerBasic()
+            return unitOfWork.TrainerRepository.Get().Select(x => new TrainerBasic()
             {
                 Id=x.Id,
                 Description=x.Description,
@@ -74,7 +74,7 @@ namespace WebProjekat2.BL
         {
             try
             {
-                Trainer trainer = data.Trainers.Find(trainerId);
+                Trainer trainer = unitOfWork.TrainerRepository.GetByID(trainerId);
 
                 if (trainer != null)
                 {
@@ -100,7 +100,7 @@ namespace WebProjekat2.BL
         {
             try
             {
-                Trainer trainer = data.Trainers.Find(trainerBasic.Id);
+                Trainer trainer = unitOfWork.TrainerRepository.GetByID(trainerBasic.Id);
                 if (trainer != null)
                 {
                     trainer.Description = trainerBasic.Description;
@@ -108,7 +108,8 @@ namespace WebProjekat2.BL
                     trainer.Photo = trainerBasic.Photo;
                     trainer.Title = trainerBasic.Title;
 
-                    data.SaveChanges();
+                    unitOfWork.TrainerRepository.Update(trainer);
+                    unitOfWork.Save();
 
                     return trainer.Id;
                 }

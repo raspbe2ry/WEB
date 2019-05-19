@@ -11,11 +11,11 @@ namespace WebProjekat2.BL
 {
     public class ApiTrainerManager : ITrainer
     {
-        public KarateContext data { get; set; }
+        public UnitOfWork unitOfWork { get; set; }
 
-        public ApiTrainerManager(KarateContext context)
+        public ApiTrainerManager(UnitOfWork unitOfWork)
         {
-            data = context;
+            this.unitOfWork = unitOfWork;
         }
 
         public int AddTrainer(TrainerBasic trainerBasic)
@@ -35,7 +35,7 @@ namespace WebProjekat2.BL
 
         public List<TrainerBasic> GetAllTrainers()
         {
-            return data.Trainers.Select(x => new TrainerBasic()
+            return unitOfWork.TrainerRepository.Get().Select(x => new TrainerBasic()
             {
                 Id = x.Id,
                 Description = x.Description,
@@ -49,7 +49,7 @@ namespace WebProjekat2.BL
         {
             try
             {
-                Trainer trainer = data.Trainers.Find(trainerId);
+                Trainer trainer = unitOfWork.TrainerRepository.GetByID(trainerId);
 
                 if (trainer != null)
                 {
