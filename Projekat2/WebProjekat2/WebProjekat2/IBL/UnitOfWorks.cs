@@ -16,6 +16,11 @@ namespace WebProjekat2.IBL
         private GenericRepository<BeltEarning> beltEarningRepository;
         private GenericRepository<StudentTraining> studentTrainingRepository;
         private GenericRepository<TrainerBeltEarning> trainerBeltEarningRepository;
+        private GenericRepository<Pool> poolRepository;
+        private GenericRepository<Question> questionRepository;
+        private GenericRepository<Answer> answerRepository;
+        private GenericRepository<PoolQuestion> poolQuestionRepository;
+        private GenericRepository<AnsweredQuestion> answeredQuestionRepository;
 
         public UnitOfWork(KarateContext context)
         {
@@ -67,6 +72,46 @@ namespace WebProjekat2.IBL
             get
             {
                 return this.trainerBeltEarningRepository ?? new GenericRepository<TrainerBeltEarning>(context);
+            }
+        }
+
+        public GenericRepository<Pool> PoolRepository
+        {
+            get
+            {
+                return this.poolRepository ?? new GenericRepository<Pool>(context);
+            }
+        }
+
+        public GenericRepository<Question> QuestionRepository
+        {
+            get
+            {
+                return this.questionRepository ?? new GenericRepository<Question>(context);
+            }
+        }
+
+        public GenericRepository<Answer> AnswerRepository
+        {
+            get
+            {
+                return this.answerRepository ?? new GenericRepository<Answer>(context);
+            }
+        }
+
+        public GenericRepository<PoolQuestion> PoolQuestionRepository
+        {
+            get
+            {
+                return this.poolQuestionRepository ?? new GenericRepository<PoolQuestion>(context);
+            }
+        }
+
+        public GenericRepository<AnsweredQuestion> AnsweredQuestionRepository
+        {
+            get
+            {
+                return this.answeredQuestionRepository ?? new GenericRepository<AnsweredQuestion>(context);
             }
         }
 

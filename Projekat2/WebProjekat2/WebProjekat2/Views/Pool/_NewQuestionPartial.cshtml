@@ -1,0 +1,34 @@
+﻿<div class="container" style="width: 100%">
+    <div class="row">
+        <h4>Question text</h4>
+        <div class="col-sm-12">
+            <textarea class="n-question-text" style="width: 500px;"></textarea>
+        </div>
+        <hr />
+    </div>
+    <div class="row n-answerContainer" >
+        <hr />
+        <h4>Question answers</h4>
+    </div>
+    <div class="row">
+        <button class="n-addAnswer col-sm-2 pull-rigth btn btn-success">New Answer</button>
+    </div>
+    <div class="row" style="margin-top: 5px">
+        <hr />
+        <div class="col-sm-6">
+            <label>Is Actual</label>
+            <input type="checkbox" class = "n-question-isActual"/>
+        </div>
+    </div>
+</div>
+
+<script>
+    $('.n-addAnswer').click(function () { 
+        $('.n-answerContainer').append(`<div class='n-answerPart col-sm-3'>
+                <textarea class='n-answer-text'></textarea>
+                <label>Is Correct</label>
+                <input type='checkbox' class='n-answer-isCorrect'/>
+            </div>`);
+    });
+
+</script>

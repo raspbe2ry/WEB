@@ -19,6 +19,7 @@ using WebProjekat2.BL;
 using WebProjekat2.MvcControllers;
 using WebProjekat2.Controllers;
 using WebProjekat2.Models;
+using WebProjekat2.ApiControllers;
 
 namespace WebProjekat2
 {
@@ -50,7 +51,8 @@ namespace WebProjekat2
                 options.AddPolicy("test",
                 builder =>
                 {
-                    builder.WithOrigins("http://localhost:8081");
+                    builder.WithOrigins("http://localhost:8081").AllowAnyHeader()
+                                .AllowAnyMethod(); 
                 });
             });
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
@@ -96,8 +98,11 @@ namespace WebProjekat2
             kernel.Bind<ITrainer>().To<TrainerManager>().InRequestScope().WithConstructorArgument("unitOfWork", kernel.Get<UnitOfWork>());
             kernel.Bind<IStudent>().To<StudentManager>().InRequestScope().WithConstructorArgument("unitOfWork", kernel.Get<UnitOfWork>());
             kernel.Bind<IBeltEarning>().To<BeltEarningManager>().InRequestScope().WithConstructorArgument("unitOfWork", kernel.Get<UnitOfWork>());
+            kernel.Bind<IPool>().To<PoolManager>().InRequestScope().WithConstructorArgument("unitOfWork", kernel.Get<UnitOfWork>());
             kernel.Bind<ApiTrainingManager>().To<ApiTrainingManager>().InRequestScope().WithConstructorArgument("unitOfWork", kernel.Get<UnitOfWork>());
             kernel.Bind<ApiTrainerManager>().To<ApiTrainerManager>().InRequestScope().WithConstructorArgument("unitOfWork", kernel.Get<UnitOfWork>());
+            kernel.Bind<PoolManager>().To<PoolManager>().InRequestScope().WithConstructorArgument("unitOfWork", kernel.Get<UnitOfWork>());
+            kernel.Bind<ApiPoolManager>().To<ApiPoolManager>().InRequestScope().WithConstructorArgument("unitOfWork", kernel.Get<UnitOfWork>());
             kernel.Bind<AnalyticsManager>().To<AnalyticsManager>().InRequestScope().WithConstructorArgument("unitOfWork", kernel.Get<UnitOfWork>())
                 .WithConstructorArgument("context", kernel.Get<DbContext>());
 
@@ -110,9 +115,11 @@ namespace WebProjekat2
             kernel.Bind<TrainerController>().To<TrainerController>().InRequestScope().WithConstructorArgument("trainerManager", kernel.Get<ITrainer>());
             kernel.Bind<BeltEarningController>().To<BeltEarningController>().InRequestScope().WithConstructorArgument("beltEarningManager", kernel.Get<IBeltEarning>());
             kernel.Bind<AnalyticController>().To<AnalyticController>().InRequestScope().WithConstructorArgument("analyticManager", kernel.Get<AnalyticsManager>());
+            kernel.Bind<PoolController>().To<PoolController>().InRequestScope().WithConstructorArgument("poolManager", kernel.Get<PoolManager>());
 
             kernel.Bind<TrainersController>().To<TrainersController>().InRequestScope().WithConstructorArgument("trainerManager", kernel.Get<ApiTrainerManager>());
             kernel.Bind<TrainingsController>().To<TrainingsController>().InRequestScope().WithConstructorArgument("trainingManager", kernel.Get<ApiTrainingManager>());
+            kernel.Bind<PoolsController>().To<PoolsController>().InRequestScope().WithConstructorArgument("poolManager", kernel.Get<ApiPoolManager>());
 
             // Cross-wire required framework services
             kernel.BindToMethod(app.GetRequestService<IViewBufferScope>);

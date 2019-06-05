@@ -1,0 +1,49 @@
+﻿#questionList {
+    margin: 20px 50px 20px 50px;
+    background-color: #e0d0e2;
+    border-radius: 10px;
+}
+
+#poolsTable{
+    margin:10px;
+}
+
+.btn-pool {
+    margin: 5px 10px 10px 10px;
+}
+
+.question-text{
+    width: 800px;
+}
+
+.answerPart{
+    border: 1px white solid;
+    border-radius: 3px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.answerPart-notConfirmed {
+    border: 1px red solid;
+    border-radius: 3px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.removeAnswer{
+    border-radius: 2px;
+    margin: 2px;
+}
+
+.answerConfirm {
+    border-radius: 2px;
+    margin: 2px;
+}
+
+.answer-text{
+    width: 190px;
+}
+
+h4 {
+    font-weight: bold;
+}

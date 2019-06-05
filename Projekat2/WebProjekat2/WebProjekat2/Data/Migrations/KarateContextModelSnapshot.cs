@@ -19,6 +19,48 @@ namespace WebProjekat2.Data.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+            modelBuilder.Entity("WebProjekat2.Models.Answer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<bool>("IsCorrect");
+
+                    b.Property<int?>("QuestionId");
+
+                    b.Property<string>("Text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("QuestionId");
+
+                    b.ToTable("Answers");
+                });
+
+            modelBuilder.Entity("WebProjekat2.Models.AnsweredQuestion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("AnswerId");
+
+                    b.Property<int>("PoolId");
+
+                    b.Property<int>("QuestionId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AnswerId");
+
+                    b.HasIndex("PoolId");
+
+                    b.HasIndex("QuestionId");
+
+                    b.ToTable("AnsweredQuestions");
+                });
+
             modelBuilder.Entity("WebProjekat2.Models.BeltEarning", b =>
                 {
                     b.Property<int>("Id")
@@ -38,6 +80,49 @@ namespace WebProjekat2.Data.Migrations
                     b.HasIndex("StudentId");
 
                     b.ToTable("BeltEarnings");
+                });
+
+            modelBuilder.Entity("WebProjekat2.Models.Pool", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("SubmitDate");
+
+                    b.Property<string>("Submiter");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Pools");
+                });
+
+            modelBuilder.Entity("WebProjekat2.Models.PoolQuestion", b =>
+                {
+                    b.Property<int>("PoolId");
+
+                    b.Property<int>("QuestionId");
+
+                    b.HasKey("PoolId", "QuestionId");
+
+                    b.HasIndex("QuestionId");
+
+                    b.ToTable("PoolQuestions");
+                });
+
+            modelBuilder.Entity("WebProjekat2.Models.Question", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<bool>("IsActual");
+
+                    b.Property<string>("Text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Questions");
                 });
 
             modelBuilder.Entity("WebProjekat2.Models.Student", b =>
@@ -126,11 +211,49 @@ namespace WebProjekat2.Data.Migrations
                     b.ToTable("Trainings");
                 });
 
+            modelBuilder.Entity("WebProjekat2.Models.Answer", b =>
+                {
+                    b.HasOne("WebProjekat2.Models.Question", "Question")
+                        .WithMany("Answers")
+                        .HasForeignKey("QuestionId");
+                });
+
+            modelBuilder.Entity("WebProjekat2.Models.AnsweredQuestion", b =>
+                {
+                    b.HasOne("WebProjekat2.Models.Answer", "Answer")
+                        .WithMany("AnsweredQuestions")
+                        .HasForeignKey("AnswerId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("WebProjekat2.Models.Pool", "Pool")
+                        .WithMany("AnsweredQuestions")
+                        .HasForeignKey("PoolId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("WebProjekat2.Models.Question", "Question")
+                        .WithMany("AnsweredQuestions")
+                        .HasForeignKey("QuestionId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("WebProjekat2.Models.BeltEarning", b =>
                 {
                     b.HasOne("WebProjekat2.Models.Student", "Student")
                         .WithMany("BeltEarnings")
                         .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("WebProjekat2.Models.PoolQuestion", b =>
+                {
+                    b.HasOne("WebProjekat2.Models.Pool", "Pool")
+                        .WithMany("Questions")
+                        .HasForeignKey("PoolId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("WebProjekat2.Models.Question", "Question")
+                        .WithMany("Pools")
+                        .HasForeignKey("QuestionId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

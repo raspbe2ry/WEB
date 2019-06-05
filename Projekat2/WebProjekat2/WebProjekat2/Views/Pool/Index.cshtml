@@ -1,0 +1,19 @@
+﻿@model WebProjekat2.ViewModels.PoolViewModel
+
+@{
+    ViewData["Title"] = "Pool";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="~/css/pool.css" rel="stylesheet" />
+
+
+<h2 style="margin-top: 80px">Pool informations</h2>
+
+<div id="poolsTable">
+    @Html.Partial("_PoolsPartial", @Model.Pools)
+</div>
+
+<div id="questionList">
+    @Html.Partial("_QuestionPartial", @Model.Question)
+</div>
+

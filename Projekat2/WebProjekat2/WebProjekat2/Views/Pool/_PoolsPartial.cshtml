@@ -1,0 +1,44 @@
+﻿@model IEnumerable<WebProjekat2.BModels.PoolBasic>
+
+<table class="table">
+    <thead>
+        <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Submiter)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.SubmitDate)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.NumberOfQuestion)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.NumberOfCorrectAnswered)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Result)
+                </th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Submiter)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SubmitDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.NumberOfQuestion)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.NumberOfCorrectAnswered)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Result)%
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

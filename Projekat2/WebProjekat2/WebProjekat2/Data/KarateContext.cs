@@ -45,6 +45,18 @@ namespace WebProjekat2.Data
                 .HasOne<BeltEarning>(tbe => tbe.BeltEarning)
                 .WithMany(t => t.Trainers)
                 .HasForeignKey(tbe => tbe.BeltEarningId);
+
+            builder.Entity<PoolQuestion>().HasKey(pq => new { pq.PoolId, pq.QuestionId });
+
+            builder.Entity<PoolQuestion>()
+                .HasOne<Pool>(pq => pq.Pool)
+                .WithMany(pq => pq.Questions)
+                .HasForeignKey(pq => pq.PoolId);
+
+            builder.Entity<PoolQuestion>()
+                .HasOne<Question>(pq => pq.Question)
+                .WithMany(pq => pq.Pools)
+                .HasForeignKey(pq => pq.QuestionId);
         }
 
         public DbSet<Trainer> Trainers { get; set; }
@@ -53,5 +65,11 @@ namespace WebProjekat2.Data
         public DbSet<BeltEarning> BeltEarnings { get; set; }
         public DbSet<StudentTraining> StudentTrainings { get; set; }
         public DbSet<TrainerBeltEarning> TrainerBeltEarnings { get; set; }
+
+        public DbSet<Answer> Answers { get; set; }
+        public DbSet<Question> Questions { get; set; }
+        public DbSet<Pool> Pools { get; set; }
+        public DbSet<PoolQuestion> PoolQuestions { get; set; }
+        public DbSet<AnsweredQuestion> AnsweredQuestions { get; set; }
     }
 }

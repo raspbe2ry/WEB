@@ -1,0 +1,256 @@
+﻿@model WebProjekat2.BModels.QuestionBasic
+
+<div class="container">
+    <div class="row">
+        <h4>Question text</h4>
+        <div class="col-sm-12">
+            @Html.TextAreaFor(model => model.Text, new { @class = "question-text" })
+        </div>
+        <hr />
+    </div>
+    <div class="row answerContainer">
+        <hr />
+        <h4>Question answers</h4>
+        @for (int i = 0; i < Model.Answers.Count; i++)
+        {
+        <div class="answerPart col-sm-4">
+            @Html.TextAreaFor(model => model.Answers[i].Text, new { data_answerId = Model.Answers[i].Id, @class = "answer-text" })
+            <label>Is Correct</label>@Html.CheckBoxFor(model => model.Answers[i].IsCorrect, new { @class = "answer-isCorrect" })
+            <button class="removeAnswer pull-right" data-daid="@Model.Answers[i].Id"><i class="fa fa-times" aria-hidden="true"></i></button>
+        </div>
+        }
+    </div>
+    <div class="row" style="margin-top: 20px;">
+        <button class="addAnswer col-sm-2 pull-right btn btn-success">New Answer</button>
+    </div>
+    <div class="row" style="margin-top: 5px">
+        <hr />
+        <div class="col-sm-12">
+            <label>Is Actual</label>
+            @Html.CheckBoxFor(model => model.IsActual, new { @class = "question-isActual" })
+        </div>
+    </div>
+
+    <div class="row">
+        <hr />
+        <button class="lastQuestion col-sm-2 btn btn-dark btn-pool" data-next="@Model.IdOfLast">
+            <i class="fa fa-arrow-left"></i> <span>LAST</span>
+        </button>
+        <button class="nextQuestion col-sm-2 btn btn-dark btn-pool" data-next="@Model.IdOfNext">
+            <span>NEXT</span> <i class="fa fa-arrow-right"></i>
+        </button>
+        <button class="deleteQuestion col-sm-2 pull-right btn btn-danger btn-pool" data-questionId="@Model.Id">Delete</button>
+        <button class="newQuestion col-sm-2 pull-right btn btn-success btn-pool">New Question</button>
+        <button class="saveQuestion col-sm-2 pull-right btn btn-success btn-pool" data-questionId="@Model.Id">Save</button>
+    </div>
+</div>
+
+<script>
+    function RefreshQuestionsPartial(questionId) {
+        $("#questionList").block({
+            message: '<h1>Saving...</h1>',
+            css: { border: '2px solid' }
+        });
+        $.ajax({
+            url: "/Pool/GetQuestion/",
+            type: "GET",
+            data: { questionId },
+            success: function (result) {
+                console.log("IDEMO");
+                $('#questionList').html(result);
+                $("#questionList").unblock();
+            }
+        });
+    };
+
+    function ShowCreateQuestion(result) {
+        var dialog = bootbox.dialog({
+            title: 'New question',
+            message: result,
+            size: 'large', 
+            buttons: {
+                create: {
+                    label: "Create",
+                    className: 'btn-success',
+                    callback: function () {
+                        var questionText = $('.n-question-text').val();
+                        var questionIsActual = $('.n-question-isActual').prop('checked');
+
+                        var answers = [];
+                        $('.n-answerPart').each(function (index) {
+                            var answerText = $(this).find('.n-answer-text').val();
+                            var isAnswerCorrect = $(this).find('.n-answer-isCorrect').prop('checked');
+                            answers.push({
+                                text: answerText,
+                                isCorrect: isAnswerCorrect,
+                            });
+                        });
+
+                        var question = {
+                            text: questionText,
+                            isActual: questionIsActual,
+                            answers: answers
+                        }
+
+                        $.ajax({
+                            url: "/Pool/AddNewQuestion/",
+                            type: "POST",
+                            dataType: "json",
+                            data: { questionBasic: question },
+                            success: function (data) {
+                                RefreshQuestionsPartial(data.questionId);
+                            },
+                        });
+                    }
+                }
+            }
+        });
+    };
+
+    function ConfirmAnswer(element) {
+        var parent = $(element).parent();
+
+        var answerText = parent.find('.answer-text').val();
+        var isAnswerCorrect = parent.find('.answer-isCorrect').prop('checked');
+        var questionId = $('.saveQuestion').first().data('questionid');
+
+        $.ajax({
+            url: "/Pool/AddAnswer/",
+            type: "GET",
+            data: { answerText, isAnswerCorrect, questionId },
+            success: function (result) {
+                RefreshQuestionsPartial(questionId);
+            },
+        });
+    };
+
+    function RemoveAnswer(element) {
+        var parent = $(element).parent();
+        parent.remove();
+    };
+
+    $('.removeAnswer').click(function () { 
+        var answerId = $(this).data('daid');
+        var questionId = $('.saveQuestion').first().data('questionid');
+
+        $.ajax({
+            url: "/Pool/DeleteAnswer/",
+            type: "POST",
+            data: { answerId },
+            success: function (result) {
+                RefreshQuestionsPartial(questionId);
+            },
+        });
+    });
+
+    $('.addAnswer').click(function () {
+        $('.answerContainer').append(`<div class='answerPart-notConfirmed col-sm-4'>
+                <textarea class='answer-text'></textarea>
+                <label>Is Correct</label>
+                <input type='checkbox' class='answer-isCorrect'/>
+                <button class="removeAnswer pull-right" onclick="RemoveAnswer(this)"><i class="fa fa-times" aria-hidden="true"></i></button>
+                <button class="answerConfirm pull-right" onclick="ConfirmAnswer(this)"><i class="fa fa-check" aria-hidden="true"></i></button>
+            </div>`);
+    });
+
+    $('.saveQuestion').click(function () {
+        var questionText = $('.question-text').val();
+        var questionId = $(this).data('questionid');
+        var questionIsActual = $('.question-isActual').prop('checked');
+
+        var answers = [];
+        $('.answerPart').each(function (index) {
+            var answerText = $(this).find('.answer-text').val();
+            var isAnswerCorrect = $(this).find('.answer-isCorrect').prop('checked');
+            var answerId = $(this).find('.answer-text').data('answerid');
+            answers.push({
+                text: answerText,
+                isCorrect: isAnswerCorrect,
+                id: answerId
+            });
+        });
+
+        var question = {
+            id: questionId,
+            text: questionText,
+            isActual: questionIsActual,
+            answers: answers
+        }
+
+        $.ajax({
+            url: "/Pool/UpdateQuestion/",
+            type: "POST",
+            dataType: "json",
+            data: { questionBasic: question },
+            success: function (result) {
+                RefreshQuestionsPartial(questionId);
+            },
+        });
+
+    });
+
+    $('.lastQuestion').click(function () {
+        var questionId = $(this).data("next");
+
+        $("#questionList").block({
+            message: '<h1>Loading last</h1>',
+            css: { border: '3px solid' }
+        });
+        $.ajax({
+            url: "/Pool/GetQuestion/",
+            type: "GET",
+            data: { questionId },
+            success: function (result) {
+                $('#questionList').html(result);
+                $("#questionList").unblock();
+            },
+        });
+    });
+
+    $('.nextQuestion').click(function () {
+        var questionId = $(this).data("next");
+
+        $("#questionList").block({
+            message: '<h1>Loading next</h1>',
+            css: { border: '2px solid' }
+        }); 
+        $.ajax({
+            url: "/Pool/GetQuestion/",
+            type: "GET",
+            data: { questionId },
+            success: function (result) {
+                $('#questionList').html(result);
+                $("#questionList").unblock();
+            },
+        });
+    });
+
+    $('.newQuestion').click(function () {
+        $.blockUI();
+        $.ajax({
+            url: "/Pool/NewQuestionPartial/",
+            type: "GET",
+            success: function (result) {
+                ShowCreateQuestion(result);
+                $.unblockUI();
+            }
+        });
+    });
+
+    $('.deleteQuestion').click(function () { 
+        var questionId = $(this).data("questionid");
+
+        $("#questionList").block({
+            message: '<h1>Saving...</h1>',
+            css: { border: '2px solid' }
+        });
+        $.ajax({
+            url: "/Pool/DeleteQuestion/",
+            type: "POST",
+            data: { questionId },
+            success: function (data) {
+                RefreshQuestionsPartial(data.lastQuestionId);
+            }
+        });
+    });
+</script>
